@@ -24,19 +24,18 @@ export async function getMunicipiosByState(sigla) {
 export async function getStatesWithMunicipios() {
   const states = await getStates()
 
-  const result = []
+  const result = await Promise.all(
+    states.map(async (state) => {
+      const totalMunicipios = await getMunicipiosByState(state.sigla)
 
-  for (const state of states) {
-    const totalMunicipios = await getMunicipiosByState(state.sigla)
-
-    result.push({
-      estado: state.nome,
-      sigla: state.sigla,
-      regiao: state.regiao,
-      totalMunicipios
+      return {
+        estado: state.nome,
+        sigla: state.sigla,
+        regiao: state.regiao,
+        totalMunicipios
+      }
     })
-  }
+  )
 
   return result
 }
-

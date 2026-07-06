@@ -1,6 +1,6 @@
 import { Router } from "express"
 
-import { getStates, getMunicipiosByState, getStatesWithMunicipios } from "../services/ibge.service.js"
+import { getStates, getStatesWithMunicipios } from "../services/ibge.service.js"
 
 
 const router = Router()
@@ -17,19 +17,13 @@ router.get("/states", async (req, res) => {
 
 router.get("/municipios", async (req, res) => {
   try {
-    const states = await getStates()
+    const statesWithMunicipios = await getStatesWithMunicipios()
 
-    const result = []
-
-    for (const state of states) {
-      const totalMunicipios = await getMunicipiosByState(state.sigla)
-
-      result.push({
-        estado: state.nome,
-        sigla: state.sigla,
-        totalMunicipios
-      })
-    }
+    const result = statesWithMunicipios.map(({ estado, sigla, totalMunicipios }) => ({
+      estado,
+      sigla,
+      totalMunicipios
+    }))
 
     res.json(result)
   } catch (error) {
@@ -37,8 +31,6 @@ router.get("/municipios", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar municípios do IBGE" })
   }
 })
-
-
 
 router.get("/summary", async (req, res) => {
   try {
@@ -49,7 +41,5 @@ router.get("/summary", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar resumo do IBGE" })
   }
 })
-
-
 
 export default router
