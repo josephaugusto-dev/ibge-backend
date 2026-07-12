@@ -1,6 +1,10 @@
 import { Router } from "express"
 
-import { getStates, getStatesWithMunicipios } from "../services/ibge.service.js"
+import {
+  getStates,
+  getStatesWithMunicipios,
+  getMunicipiosNamesByState
+} from "../services/ibge.service.js"
 
 
 const router = Router()
@@ -29,6 +33,18 @@ router.get("/municipios", async (req, res) => {
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: "Erro ao buscar municípios do IBGE" })
+  }
+})
+
+router.get("/municipios/:uf", async (req, res) => {
+  try {
+    const { uf } = req.params
+    const municipios = await getMunicipiosNamesByState(uf.toUpperCase())
+
+    res.json(municipios)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: "Erro ao buscar municípios do estado" })
   }
 })
 

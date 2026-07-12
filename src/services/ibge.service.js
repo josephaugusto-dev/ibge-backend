@@ -21,6 +21,19 @@ export async function getMunicipiosByState(sigla) {
   return response.data.length
 }
 
+export async function getMunicipiosNamesByState(sigla) {
+  const response = await axios.get(
+    `${IBGE_BASE_URL}/localidades/estados/${sigla}/municipios`
+  )
+
+  return response.data
+    .map((municipio) => ({
+      id: municipio.id,
+      nome: municipio.nome
+    }))
+    .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
+}
+
 export async function getStatesWithMunicipios() {
   const states = await getStates()
 
